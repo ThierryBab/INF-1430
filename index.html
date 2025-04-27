@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Comparaison WebAssembly vs JavaScript</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <h1>Comparaison WebAssembly vs JavaScript</h1>
+
+  <div class="container">
+    <h2>Tester sur un tableau</h2>
+
+    <div class="buttons">
+      <button id="generateBtn">Générer des données</button>
+      <button id="generateBigBtn">Générer GRAND tableau</button>
+    </div>
+
+    <input id="arrayInput" type="text" placeholder="Ex: 5,2,9,1,5,6 ou 10000 pour tableau aléatoire" />
+
+    <div class="buttons">
+      <button id="triWasmBtn" disabled>Tri (WebAssembly)</button>
+      <button id="triJsBtn" disabled>Tri (JavaScript)</button>
+    </div>
+
+    <h2>Tester la multiplication de matrices</h2>
+    <div class="buttons">
+      <button id="matrixWasmBtn" disabled>Multiplication Matrices (WebAssembly)</button>
+      <button id="matrixJsBtn" disabled>Multiplication Matrices (JavaScript)</button>
+      <label for="repeatInput"><strong>Nombre de répétitions :</strong></label>
+      <input id="repeatInput" type="number" value="10" min="1" />
+    </div>
+
+    <div id="result" class="result"></div>
+
+    <h2>Graphique Comparatif</h2>
+    <canvas id="perfChart" width="400" height="200"></canvas>
+
+  </div>
+
+  <script type="module" src="app.js"></script>
+
+</body>
+</html>
