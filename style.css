@@ -5,23 +5,24 @@ body {
     margin: 30px;
     background-color: #f5f5f5;
     color: #333;
-  }
-  
-  h1 {
+}
+
+h1 {
     color: #4CAF50;
     text-align: center;
-  }
-  
-  .container {
+}
+
+.container {
     max-width: 900px;
     margin: auto;
     background: white;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  }
-  
-  input, button {
+}
+
+input,
+button {
     width: 100%;
     padding: 12px;
     margin: 10px 0;
@@ -29,51 +30,50 @@ body {
     border-radius: 8px;
     font-size: 16px;
     box-sizing: border-box;
-  }
-  
-  button {
+}
+
+button {
     background-color: #4CAF50;
     color: white;
     border: none;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  button:hover:not(:disabled) {
+}
+
+button:hover:not(:disabled) {
     background-color: #45a049;
-  }
-  
-  button:disabled {
+}
+
+button:disabled {
     background-color: #aaa;
     cursor: not-allowed;
-  }
-  
-  p {
+}
+
+p {
     font-weight: bold;
     text-align: center;
     margin-top: 15px;
     font-size: 18px;
-  }
-  
-  .buttons {
+}
+
+.buttons {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 10px;
-  }
-  
-  .result {
+}
+
+.result {
     margin-top: 20px;
     background: #eef;
     padding: 15px;
     border-radius: 10px;
     text-align: center;
     font-size: 18px;
-  }
-  
-  /* Chart.js canvas */
-  #perfChart {
+}
+
+/* Chart.js canvas */
+#perfChart {
     margin-top: 30px;
-  }
-  
+}
