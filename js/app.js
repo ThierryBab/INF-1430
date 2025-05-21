@@ -421,34 +421,4 @@ function displayCategoryAverages(categoryAverages) {
         row.insertCell(1).textContent = average.averageDuration; // Moyenne des durées
     });
 }
-function addTestEntry(index, type, jsTime, wasmTime) {
-    const tbody = document.getElementById('testHistoryBody');
-    const row = document.createElement('tr');
-    row.innerHTML = `
-        <td>${index}</td>
-        <td>${type}</td>
-        <td>${jsTime.toFixed(2)}</td>
-        <td>${wasmTime.toFixed(2)}</td>
-    `;
-    tbody.appendChild(row);
-
-    updateTableVisibility();
-}
-
-function updateTableVisibility() {
-    const rows = document.querySelectorAll('#testHistoryBody tr');
-    const showAllBtn = document.getElementById('showAllBtn');
-
-    rows.forEach((row, i) => {
-        row.style.display = (i < 10) ? '' : 'none';
-    });
-
-    showAllBtn.style.display = (rows.length > 10) ? 'inline-block' : 'none';
-}
-
-document.getElementById('showAllBtn').addEventListener('click', () => {
-    const rows = document.querySelectorAll('#testHistoryBody tr');
-    rows.forEach(row => row.style.display = '');
-    document.getElementById('showAllBtn').style.display = 'none';
-});
 
