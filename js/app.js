@@ -207,3 +207,248 @@ function resetResults() {
     perfData = [];
     document.querySelector("#resultsTable tbody").innerHTML = "";
 }
+document.getElementById('runTestsBtn').addEventListener('click', function () {
+    // Désactiver les autres boutons pour éviter de lancer d'autres tests pendant l'exécution
+    disableButtons();
+
+    const testsCount = 100; // Nombre de tests à effectuer
+    const results = [];
+
+    // Lancer les tests en masse
+    for (let i = 0; i < testsCount; i++) {
+        performTest(i + 1, results);  // Appeler une fonction pour chaque test
+    }
+
+    // Une fois tous les tests effectués, réactiver les boutons
+    setTimeout(() => {
+        enableButtons();
+        logResults(results);
+    }, 3000);  // Vous pouvez ajuster le délai en fonction de la durée des tests
+});
+
+function generateRandomArray(size) {
+    const arr = [];
+    for (let i = 0; i < size; i++) {
+        arr.push(Math.floor(Math.random() * 10000)); // Valeurs aléatoires
+    }
+    return arr;
+}
+
+function logResults(results) {
+    const resultsTable = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
+
+    // Vider les résultats existants pour éviter les doublons si plusieurs tests sont effectués
+    resultsTable.innerHTML = "";
+
+    // Ajouter les résultats dans le tableau détaillé
+    results.forEach(result => {
+        const row = resultsTable.insertRow();
+
+        row.insertCell(0).textContent = result.algorithm;
+        row.insertCell(1).textContent = result.language;
+        row.insertCell(2).textContent = result.size;
+        row.insertCell(3).textContent = result.repetitions;
+        row.insertCell(4).textContent = result.duration;
+        row.insertCell(5).textContent = result.date;
+    });
+
+    // Calculer les moyennes par catégorie
+    const categoryAverages = calculateCategoryAverages(results);
+
+    // Afficher les moyennes dans un tableau dédié
+    displayCategoryAverages(categoryAverages);
+}
+
+
+
+function performTest(testNumber, results) {
+    const arraySize = Math.floor(Math.random() * 1000) + 10;
+    const repeatCount = Math.floor(Math.random() * 5) + 1;
+
+    // --- TRI JS ---
+    const array = generateRandomArray(arraySize);
+    const jsStartTime = performance.now();
+    array.sort((a, b) => a - b);
+    const jsEndTime = performance.now();
+    const jsDuration = jsEndTime - jsStartTime;
+
+    results.push({
+        testNumber,
+        algorithm: "Tri",
+        language: "JavaScript",
+        size: arraySize,
+        repetitions: repeatCount,
+        duration: jsDuration.toFixed(2),
+        date: new Date().toLocaleString(),
+    });
+
+    // --- TRI WASM ---
+    const wasmArray = generateRandomArray(arraySize);
+    const wasmStartTime = performance.now();
+    if (triModule) {
+        const ptr = triModule._malloc(arraySize * 4);
+        triModule.HEAP32.set(wasmArray, ptr / 4);
+        triModule._bubbleSort(ptr, arraySize);
+        triModule._free(ptr);
+    }
+    const wasmEndTime = performance.now();
+    const wasmDuration = wasmEndTime - wasmStartTime;
+
+    results.push({
+        testNumber,
+        algorithm: "Tri",
+        language: "WebAssembly",
+        size: arraySize,
+        repetitions: repeatCount,
+        duration: wasmDuration.toFixed(2),
+        date: new Date().toLocaleString(),
+    });
+
+    // --- MATRICES JS ---
+    const n = 100;
+    const A = Array.from({ length: n * n }, () => Math.floor(Math.random() * 10));
+    const B = Array.from({ length: n * n }, () => Math.floor(Math.random() * 10));
+    const matJsStart = performance.now();
+    for (let i = 0; i < repeatCount; i++) multiplyMatricesJS(A, B, n);
+    const matJsEnd = performance.now();
+    const matJsDuration = matJsEnd - matJsStart;
+
+    results.push({
+        testNumber,
+        algorithm: "Matrices",
+        language: "JavaScript",
+        size: n,
+        repetitions: repeatCount,
+        duration: matJsDuration.toFixed(2),
+        date: new Date().toLocaleString(),
+    });
+
+    // --- MATRICES WASM ---
+    if (matriceModule) {
+        const aPtr = matriceModule._malloc(n * n * 4);
+        const bPtr = matriceModule._malloc(n * n * 4);
+        const cPtr = matriceModule._malloc(n * n * 4);
+
+        matriceModule.HEAP32.set(A, aPtr / 4);
+        matriceModule.HEAP32.set(B, bPtr / 4);
+
+        const matWasmStart = performance.now();
+        for (let i = 0; i < repeatCount; i++) {
+            matriceModule._multiplyMatrices(aPtr, bPtr, cPtr, n);
+        }
+        const matWasmEnd = performance.now();
+
+        matriceModule._free(aPtr);
+        matriceModule._free(bPtr);
+        matriceModule._free(cPtr);
+
+        const matWasmDuration = matWasmEnd - matWasmStart;
+
+        results.push({
+            testNumber,
+            algorithm: "Matrices",
+            language: "WebAssembly",
+            size: n,
+            repetitions: repeatCount,
+            duration: matWasmDuration.toFixed(2),
+            date: new Date().toLocaleString(),
+        });
+    }
+}
+
+
+
+function disableButtons() {
+    document.getElementById('runTestsBtn').disabled = true;
+    document.getElementById('triWasmBtn').disabled = true;
+    document.getElementById('triJsBtn').disabled = true;
+    document.getElementById('matrixWasmBtn').disabled = true;
+    document.getElementById('matrixJsBtn').disabled = true;
+}
+
+function enableButtons() {
+    document.getElementById('runTestsBtn').disabled = false;
+    document.getElementById('triWasmBtn').disabled = false;
+    document.getElementById('triJsBtn').disabled = false;
+    document.getElementById('matrixWasmBtn').disabled = false;
+    document.getElementById('matrixJsBtn').disabled = false;
+}
+function calculateCategoryAverages(results) {
+    const averages = {
+        triJS: { totalDuration: 0, count: 0 },
+        triWASM: { totalDuration: 0, count: 0 },
+        matrixJS: { totalDuration: 0, count: 0 },
+        matrixWASM: { totalDuration: 0, count: 0 }
+    };
+
+    // Regrouper les résultats par catégorie d'algorithmes et langage
+    results.forEach(result => {
+        let key = "";
+        if (result.algorithm === "Tri") {
+            key = result.language === "JavaScript" ? "triJS" : "triWASM";
+        } else if (result.algorithm === "Matrices") {
+            key = result.language === "JavaScript" ? "matrixJS" : "matrixWASM";
+        }
+
+        if (averages[key]) {
+            averages[key].totalDuration += parseFloat(result.duration);
+            averages[key].count += 1;
+        }
+    });
+
+    // Calculer les moyennes pour chaque catégorie
+    const averageResults = [
+        { category: "Tri JS", averageDuration: (averages.triJS.totalDuration / averages.triJS.count).toFixed(2) },
+        { category: "Tri WASM", averageDuration: (averages.triWASM.totalDuration / averages.triWASM.count).toFixed(2) },
+        { category: "Matrix JS", averageDuration: (averages.matrixJS.totalDuration / averages.matrixJS.count).toFixed(2) },
+        { category: "Matrix WASM", averageDuration: (averages.matrixWASM.totalDuration / averages.matrixWASM.count).toFixed(2) }
+    ];
+
+    return averageResults;
+}
+
+function displayCategoryAverages(categoryAverages) {
+    const averagesTable = document.getElementById('categoryAveragesTable').getElementsByTagName('tbody')[0];
+
+    // Vider le tableau des moyennes
+    averagesTable.innerHTML = "";
+
+    // Ajouter les moyennes dans le tableau
+    categoryAverages.forEach(average => {
+        const row = averagesTable.insertRow();
+
+        row.insertCell(0).textContent = average.category;
+        row.insertCell(1).textContent = average.averageDuration; // Moyenne des durées
+    });
+}
+function addTestEntry(index, type, jsTime, wasmTime) {
+    const tbody = document.getElementById('testHistoryBody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>${index}</td>
+        <td>${type}</td>
+        <td>${jsTime.toFixed(2)}</td>
+        <td>${wasmTime.toFixed(2)}</td>
+    `;
+    tbody.appendChild(row);
+
+    updateTableVisibility();
+}
+
+function updateTableVisibility() {
+    const rows = document.querySelectorAll('#testHistoryBody tr');
+    const showAllBtn = document.getElementById('showAllBtn');
+
+    rows.forEach((row, i) => {
+        row.style.display = (i < 10) ? '' : 'none';
+    });
+
+    showAllBtn.style.display = (rows.length > 10) ? 'inline-block' : 'none';
+}
+
+document.getElementById('showAllBtn').addEventListener('click', () => {
+    const rows = document.querySelectorAll('#testHistoryBody tr');
+    rows.forEach(row => row.style.display = '');
+    document.getElementById('showAllBtn').style.display = 'none';
+});
+
