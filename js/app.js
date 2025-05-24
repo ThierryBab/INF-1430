@@ -264,11 +264,11 @@ function logResults(results) {
 function performTest(testNumber, results) {
     const arraySize = Math.floor(Math.random() * 1000) + 10;
     const repeatCount = Math.floor(Math.random() * 5) + 1;
+    const baseArray = generateRandomArray(arraySize);
 
     // --- TRI JS ---
-    const array = generateRandomArray(arraySize);
     const jsStartTime = performance.now();
-    array.sort((a, b) => a - b);
+    bubbleSortJS([...baseArray]);
     const jsEndTime = performance.now();
     const jsDuration = jsEndTime - jsStartTime;
 
@@ -283,11 +283,10 @@ function performTest(testNumber, results) {
     });
 
     // --- TRI WASM ---
-    const wasmArray = generateRandomArray(arraySize);
     const wasmStartTime = performance.now();
     if (triModule) {
         const ptr = triModule._malloc(arraySize * 4);
-        triModule.HEAP32.set(wasmArray, ptr / 4);
+        triModule.HEAP32.set(baseArray, ptr / 4);
         triModule._bubbleSort(ptr, arraySize);
         triModule._free(ptr);
     }

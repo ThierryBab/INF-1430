@@ -3,7 +3,6 @@
 extern "C"
 {
 
-    // Multiplie deux matrices carrées de taille n x n
     EMSCRIPTEN_KEEPALIVE
     void multiplyMatrices(int *A, int *B, int *C, int n)
     {
