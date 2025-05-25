@@ -11,6 +11,8 @@ export function resetResults() {
     localStorage.removeItem(resultsKey);
     perfData = [];
     document.querySelector("#resultsTable tbody").innerHTML = "";
+    document.querySelector("#categoryAveragesTable tbody").innerHTML = "";
+
 }
 
 export function addRowToTable(entry) {
