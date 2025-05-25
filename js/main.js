@@ -1,65 +1,39 @@
-(function ($) {
-    "use strict";
+import createTriModule from '../tri_tableau.js';
+import createMatriceModule from '../multiplication_matrice.js';
+import { initCharts } from './charts.js';
+import { disableButtons, enableButtons, updateButtonsState } from './ui.js';
+import { performTest } from './tests.js';
+import { logResults } from './storage.js';
+import { registerEventListeners } from './events.js';
 
-    // Spinner
-    var spinner = function () {
-        setTimeout(function () {
-            if ($('#spinner').length > 0) {
-                $('#spinner').removeClass('show');
-            }
-        }, 1);
-    };
-    spinner();
+let triModule = null;
+let matriceModule = null;
 
+async function init() {
+    triModule = await createTriModule();
+    matriceModule = await createMatriceModule();
 
-    // Initiate the wowjs
-    new WOW().init();
+    document.querySelectorAll('button').forEach(btn => btn.disabled = false);
+    const arrayInput = document.getElementById('arrayInput');
+    arrayInput.addEventListener('input', updateButtonsState);
+    updateButtonsState();
 
-
-    // Sticky Navbar
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 300) {
-            $('.sticky-top').addClass('bg-primary shadow-sm').css('top', '0px');
-        } else {
-            $('.sticky-top').removeClass('bg-primary shadow-sm').css('top', '-150px');
-        }
-    });
+    initCharts();
+    registerEventListeners(triModule, matriceModule);
+}
 
 
-    // Facts counter
-    $('[data-toggle="counter-up"]').counterUp({
-        delay: 10,
-        time: 2000
-    });
+document.addEventListener('DOMContentLoaded', init);
 
-
-    // Back to top button
-    $(window).scroll(function () {
-        if ($(this).scrollTop() > 100) {
-            $('.back-to-top').fadeIn('slow');
-        } else {
-            $('.back-to-top').fadeOut('slow');
-        }
-    });
-    $('.back-to-top').click(function () {
-        $('html, body').animate({ scrollTop: 0 }, 1500, 'easeInOutExpo');
-        return false;
-    });
-
-
-    // Testimonials carousel
-    $(".testimonial-carousel").owlCarousel({
-        items: 1,
-        autoplay: true,
-        smartSpeed: 1000,
-        dots: true,
-        loop: true,
-        nav: true,
-        navText: [
-            '<i class="bi bi-chevron-left"></i>',
-            '<i class="bi bi-chevron-right"></i>'
-        ]
-    });
-
-})(jQuery);
-
+document.getElementById('runTestsBtn').addEventListener('click', function () {
+    disableButtons();
+    const testsCount = 100;
+    const results = [];
+    for (let i = 0; i < testsCount; i++) {
+        performTest(i + 1, results, triModule, matriceModule);
+    }
+    setTimeout(() => {
+        enableButtons();
+        logResults(results);
+    }, 3000);
+});
