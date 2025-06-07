@@ -37,7 +37,7 @@ export function registerEventListeners(triModule, matriceModule) {
         const A = Array.from({ length: n * n }, () => Math.floor(Math.random() * 10));
         const B = Array.from({ length: n * n }, () => Math.floor(Math.random() * 10));
         const time = testMatrixJS(A, B, n, reps);
-        document.getElementById('matrixResult').innerHTML = `<p><strong>JS Matrices (x${reps}) :</strong> ${time} ms</p>`;
+        document.getElementById('matrixResultJS').innerHTML = `<p><strong>JS Matrices (x${reps}) :</strong> ${time} ms</p>`;
         updateChart(matrixChart, 0, time, `JS (x${reps})`);
         saveResult({ algo: 'matrices', language: 'JS', inputSize: n, repetitions: reps, durationMs: parseFloat(time), date: new Date().toISOString() });
     });
@@ -48,7 +48,7 @@ export function registerEventListeners(triModule, matriceModule) {
         const A = new Int32Array(n * n).map(() => Math.floor(Math.random() * 10));
         const B = new Int32Array(n * n).map(() => Math.floor(Math.random() * 10));
         const time = testMatrixWASM(A, B, n, reps, matriceModule);
-        document.getElementById('matrixResult').innerHTML = `<p><strong>WASM Matrices (x${reps}) :</strong> ${time} ms</p>`;
+        document.getElementById('matrixResultWASM').innerHTML = `<p><strong>WASM Matrices (x${reps}) :</strong> ${time} ms</p>`;
         updateChart(matrixChart, 1, time, `WASM (x${reps})`);
         saveResult({ algo: 'matrices', language: 'WASM', inputSize: n, repetitions: reps, durationMs: parseFloat(time), date: new Date().toISOString() });
     });
