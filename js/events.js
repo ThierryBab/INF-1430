@@ -18,7 +18,7 @@ export function registerEventListeners(triModule, matriceModule) {
     document.getElementById('triJsBtn')?.addEventListener('click', () => {
         const array = parseArray(document.getElementById('arrayInput').value);
         const time = testTriJS(array);
-        document.getElementById('triResult').innerHTML = `<p><strong>Tri JS :</strong> ${time} ms</p>`;
+        document.getElementById('triResultJS').innerHTML = `<p><strong>Tri JS :</strong> ${time} ms</p>`;
         updateChart(triChart, 0, time);
         saveResult({ algo: 'tri', language: 'JS', inputSize: array.length, repetitions: 1, durationMs: parseFloat(time), date: new Date().toISOString() });
     });
@@ -26,7 +26,7 @@ export function registerEventListeners(triModule, matriceModule) {
     document.getElementById('triWasmBtn')?.addEventListener('click', () => {
         const array = parseArray(document.getElementById('arrayInput').value);
         const time = testTriWASM(array, triModule);
-        document.getElementById('triResult').innerHTML = `<p><strong>Tri WASM :</strong> ${time} ms</p>`;
+        document.getElementById('triResultWASM').innerHTML = `<p><strong>Tri WASM :</strong> ${time} ms</p>`;
         updateChart(triChart, 1, time);
         saveResult({ algo: 'tri', language: 'WASM', inputSize: array.length, repetitions: 1, durationMs: parseFloat(time), date: new Date().toISOString() });
     });
