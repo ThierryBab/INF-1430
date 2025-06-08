@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', init);
 
 document.getElementById('runTestsBtn').addEventListener('click', function () {
     disableButtons();
-    const testsCount = 100;
+    const testsCount = 10;
     const results = [];
     for (let i = 0; i < testsCount; i++) {
         performTest(i + 1, results, triModule, matriceModule);
