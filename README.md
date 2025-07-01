@@ -9,6 +9,9 @@ Ce projet a pour but de comparer les performances de deux algorithmes implément
 ## Lien Démo en ligne
 https://thierrybab.github.io/INF-1430/
 
+## Lien Présentation en ligne
+https://youtu.be/DDeJaGjcc0s
+
 ## Arborescence du projet
 
 ```
